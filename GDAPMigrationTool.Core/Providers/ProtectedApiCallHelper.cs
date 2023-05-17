@@ -4,7 +4,6 @@
 using Microsoft.Net.Http.Headers;
 using System.Net.Http.Headers;
 
-
 namespace PartnerLed.Providers
 {
     /// <summary>

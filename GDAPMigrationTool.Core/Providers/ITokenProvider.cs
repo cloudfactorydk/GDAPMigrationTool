@@ -3,7 +3,7 @@ using PartnerLed.Model;
 
 namespace PartnerLed.Providers
 {
-    internal interface ITokenProvider
+    public interface ITokenProvider
     {
         Task<AuthenticationResult?> GetTokenAsync(Resource type);
         Task<bool> CheckPrerequisite();

@@ -11,7 +11,7 @@ using Microsoft.Identity.Client;
 
 namespace PartnerLed.Providers
 {
-    internal class DapProvider : IDapProvider
+    public class DapProvider : IDapProvider
     {
         /// <summary>
         /// Provider Instances.

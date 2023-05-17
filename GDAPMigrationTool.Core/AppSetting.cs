@@ -1,11 +1,9 @@
-﻿
-
-using GBM.Model;
+﻿using GBM.Model;
 using Microsoft.Identity.Client;
 
 namespace PartnerLed
 {
-    internal class AppSetting
+    public class AppSetting
     {
         public AppSetting() => init();
 

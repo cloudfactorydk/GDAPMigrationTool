@@ -13,7 +13,7 @@ using System.Net;
 
 namespace PartnerLed.Providers
 {
-    internal class GdapProvider : IGdapProvider
+    public class GdapProvider : IGdapProvider
     {
         /// <summary>
         /// Provider Instances
