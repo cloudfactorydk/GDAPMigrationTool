@@ -23,10 +23,10 @@ jobs:
         run: dotnet restore
 
       - name: Build project
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release -p:RuntimeIdentifier=win-x64
 
       - name: Publish project
-        run: dotnet publish --configuration Release --output ./publish -p:PublishSingleFile=true --self-contained true -p:DebugType=None -p:DebugSymbols=false
+        run: dotnet publish --configuration Release --output ./publish -p:PublishSingleFile=true --self-contained true -p:DebugType=None -p:DebugSymbols=false -p:RuntimeIdentifier=win-x64
 
       - name: Create Release
         id: create_release
