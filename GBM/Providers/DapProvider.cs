@@ -7,6 +7,7 @@ using PartnerLed.Model;
 using PartnerLed.Utility;
 using System.Globalization;
 using System.Net;
+using Microsoft.Identity.Client;
 
 namespace PartnerLed.Providers
 {
@@ -58,22 +59,28 @@ namespace PartnerLed.Providers
             return authenticationResult?.AccessToken;
         }
 
+        public async Task<AuthenticationResult> getTokenRaw(Resource resource)
+        {
+            var authenticationResult = await tokenProvider.GetTokenAsync(resource);
+            return authenticationResult;
+        }
+
 
         /// <summary>
         /// Export customer Details based on user selection of type
         /// </summary>
         /// <param name="type">Export type "JSON" or "CSV" based on user selection.</param>
         /// <returns></returns>
-        public async Task<bool> ExportCustomerDetails(ExportImport type)
+        public async Task<List<DelegatedAdminRelationshipRequest>?> ExportCustomerDetails(ExportImport type)
         {
-            var exportImportProvider = exportImportProviderFactory.Create(type);            
+            var exportImportProvider = exportImportProviderFactory.Create(type);
             var url = $"{WebApiUrlAllDaps}?$count=true&$filter=dapEnabled+eq+true&$orderby=organizationDisplayName";
             var nextLink = string.Empty;
-            List<DelegatedAdminRelationshipRequest>? allCustomer = new List<DelegatedAdminRelationshipRequest>();
+            List<DelegatedAdminRelationshipRequest> allCustomer = new List<DelegatedAdminRelationshipRequest>();
             try
             {
                 Console.WriteLine("Downloading customers..");
-                Helper.ResetSpin("Pages.. ");
+                // Helper.ResetSpin("Pages.. ");
                 protectedApiCallHelper.setHeader(false);
                 do
                 {
@@ -82,9 +89,9 @@ namespace PartnerLed.Providers
                     {
                         url = nextLink;
                     }
-                    
+
                     var response = await protectedApiCallHelper.CallWebApiAndProcessResultAsync(url, accessToken);
-                    Helper.Spin();
+                    // Helper.Spin();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = JsonConvert.DeserializeObject(response.Content.ReadAsStringAsync().Result) as JObject;
@@ -95,28 +102,28 @@ namespace PartnerLed.Providers
                         {
                             nextLink = (string?)nextData.FirstOrDefault();
                         }
-                        Helper.Spin();
+                        // Helper.Spin();
                         allCustomer.AddRange(GetListDelegatedRequest(result, partnerTenantId));
-
                     }
                     else
                     {
                         string userResponse = GetUserResponse(response.StatusCode);
                         nextLink = string.Empty;
-                        Console.WriteLine($"{userResponse}");
+                        // Console.WriteLine($"{userResponse}");
                     }
                 } while (!string.IsNullOrEmpty(nextLink));
 
-                var path = $"{Constants.OutputFolderPath}/customers";
-                await exportImportProvider.WriteAsync(allCustomer, $"{path}.{Helper.GetExtenstion(type)}");
-                Console.WriteLine($"\nDownloaded customers at {Constants.OutputFolderPath}/customers.{Helper.GetExtenstion(type)}");
+                // var path = $"{Constants.OutputFolderPath}/customers";
+                //await exportImportProvider.WriteAsync(allCustomer, $"{path}.{Helper.GetExtenstion(type)}");
+                Console.WriteLine($"\nDownloaded customers: " + allCustomer.Count);
+                return allCustomer;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while exporting customer Details");
+                Console.WriteLine($"Error while exporting customer Details: " + ex.Message);
                 logger.LogError(ex.Message);
+                return null;
             }
-            return true;
         }
 
         private List<DelegatedAdminRelationshipRequest> GetListDelegatedRequest(JObject result, string partnerTenantId)
@@ -130,7 +137,7 @@ namespace PartnerLed.Providers
                     // check for default value
                     var displayName = !string.IsNullOrEmpty(customProperties.DefaultGDAPName) ? string.Format(CultureInfo.InvariantCulture, customProperties.DefaultGDAPName, dapCustomer.CustomerTenantId) : string.Empty;
                     var duration = !string.IsNullOrEmpty(customProperties.DefaultGDAPDuration) ? $"{customProperties.DefaultGDAPDuration}" : string.Empty;
-                    allCustomer.Add(new DelegatedAdminRelationshipRequest() {Name = displayName, Duration = duration,  CustomerTenantId = dapCustomer.CustomerTenantId, OrganizationDisplayName = dapCustomer.OrganizationDisplayName, PartnerTenantId = partnerTenantId });
+                    allCustomer.Add(new DelegatedAdminRelationshipRequest() { Name = displayName, Duration = duration, CustomerTenantId = dapCustomer.CustomerTenantId, OrganizationDisplayName = dapCustomer.OrganizationDisplayName, PartnerTenantId = partnerTenantId });
                 }
             }
 
@@ -153,32 +160,35 @@ namespace PartnerLed.Providers
         /// </summary>
         /// <param name="type">Export type "JSON" or "CSV" based on user selection.</param>
         /// <returns></returns>
-        public async Task<bool> GenerateDAPRelatioshipwithAccessAssignment(ExportImport type)
+        public async Task<bool> GenerateDAPRelatioshipwithAccessAssignment(
+            ExportImport type,
+            List<DelegatedAdminRelationshipRequest> customers,
+            List<UnifiedRole> roles)
         {
-            var option = Helper.UserConfirmation("Warning: To run this operation, please make sure all the input files are in the folder: \n" + $"{Constants.InputFolderPath}");
+            //var option = Helper.UserConfirmation("Warning: To run this operation, please make sure all the input files are in the folder: \n" + $"{Constants.InputFolderPath}");
 
             try
             {
-                if (option)
+                //if (option)
+                //{
+                TimeSpan ts = new TimeSpan(0, 0, 5);
+                TimeSpan ts1 = new TimeSpan(0, 0, 10);
+
+                await gdapProvider.CreateGDAPRequestAsync(type, customers, roles);
+                Console.WriteLine($"\nWaiting for relationship activations... 10 seconds");
+                Thread.Sleep(ts1);
+                await gdapProvider.RefreshGDAPRequestAsync(type);
+
+                while (!Helper.UserConfirmation("Confirm all GDAP relationship activation complete[y/Y] or refresh again[r/R]:", false))
                 {
-                    TimeSpan ts = new TimeSpan(0, 0, 5);
-                    TimeSpan ts1 = new TimeSpan(0, 0, 10);
-
-                    await gdapProvider.CreateGDAPRequestAsync(type);
-                    Console.WriteLine($"\nWaiting for relationship activations... 10 seconds");
-                    Thread.Sleep(ts1);
                     await gdapProvider.RefreshGDAPRequestAsync(type);
-
-                    while (!Helper.UserConfirmation("Confirm all GDAP relationship activation complete[y/Y] or refresh again[r/R]:", false))
-                    {
-                        await gdapProvider.RefreshGDAPRequestAsync(type);
-                    }
-
-                    await accessAssignmentProvider.CreateAccessAssignmentRequestAsync(type);
-                    Console.WriteLine($"\nWaiting for security group-role assignment activations...");
-                    Thread.Sleep(ts1);
-                    await accessAssignmentProvider.RefreshAccessAssignmentRequest(type);
                 }
+
+                //await accessAssignmentProvider.CreateAccessAssignmentRequestAsync(type);
+                Console.WriteLine($"\nWaiting for security group-role assignment activations...");
+                Thread.Sleep(ts1);
+                await accessAssignmentProvider.RefreshAccessAssignmentRequest(type);
+                //}
             }
             catch (Exception ex)
             {

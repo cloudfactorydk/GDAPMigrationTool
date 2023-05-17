@@ -119,7 +119,7 @@ namespace PartnerLed.Providers
             AuthenticationResult result;
             try
             {
-                Console.WriteLine("Authenticating: Login via Web browser");
+                // Console.WriteLine("Authenticating: Login via Web browser");
                 result = await tokenAcquisitionHelper.AcquireATokenFromCacheOrInteractivelyAsync(scope);
             }
             catch

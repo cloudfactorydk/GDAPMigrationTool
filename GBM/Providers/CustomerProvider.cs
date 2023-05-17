@@ -42,7 +42,7 @@ namespace PartnerLed.Providers
             return authenticationResult?.AccessToken;
         }
 
-        private async Task<DAPRemovalResponse?> PatchDAPRemoval(DAPTerminate customer)
+        private async Task<DAPRemovalResponse> PatchDAPRemoval(DAPTerminate customer)
         {
             var CustomerDetails = new DAPRemovalResponse()
             {

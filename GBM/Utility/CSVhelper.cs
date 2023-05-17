@@ -19,7 +19,7 @@ namespace PartnerLed.Utility
         /// <param name="data">The list of data to export to CSV.</param>
         /// <param name="fileName">The filename to write CSV data to.</param>
         /// <returns>No return.</returns>
-        public async Task WriteAsync<T>(IEnumerable<T> data, string fileName)
+        public async Task WriteAsync<T>(IEnumerable<T>? data, string fileName)
         {
             int index = fileName.LastIndexOf('/');
             var directory = fileName[..index];

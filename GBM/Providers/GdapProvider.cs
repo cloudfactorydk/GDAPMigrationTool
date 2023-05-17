@@ -98,7 +98,7 @@ namespace PartnerLed.Providers
                     JsonConvert.SerializeObject(delegatedAdminRelationship, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToString());
 
                 string userResponse = GetUserResponse(response.StatusCode);
-                Console.WriteLine($"{delegatedAdminRelationship.DisplayName} - {userResponse}");
+                Console.WriteLine($"{delegatedAdminRelationship.Customer.DisplayName} - {userResponse}");
 
                 logger
                   .LogInformation($"GDAP Response:\n{delegatedAdminRelationship.DisplayName} {delegatedAdminRelationship.Customer.TenantId}\n {response.Content.ReadAsStringAsync().Result} \n");
@@ -214,7 +214,7 @@ namespace PartnerLed.Providers
         /// </summary>
         /// <param name="granularRelationshipId">GDAP relationshipId</param>
         /// <returns>GDAP relationship object</returns>
-        private async Task<DelegatedAdminRelationship?> GetGdapRelationship(string granularRelationshipId)
+        private async Task<DelegatedAdminRelationship> GetGdapRelationship(string granularRelationshipId)
         {
             try
             {
@@ -271,7 +271,7 @@ namespace PartnerLed.Providers
                     {
                         var gDapRelationshipList = await exportImportProvider.ReadAsync<DelegatedAdminRelationship>(path);
                         Console.WriteLine($"Reading file {path}");
-                        
+
                         var statusToUpdate = CheckStatus(fileName);
                         var inputRequest = gDapRelationshipList?.Where(x => x.Status.HasValue && statusToUpdate.Contains(x.Status.Value)).ToList();
                         var remainingDataList = gDapRelationshipList?.Where(x => !x.Status.HasValue || !statusToUpdate.Contains(x.Status.Value)).ToList();
@@ -330,8 +330,11 @@ namespace PartnerLed.Providers
 
         private List<DelegatedAdminRelationshipStatus> CheckStatus(string fileName)
         {
-            if (fileName == "gdapRelationship_terminate") { return new List<DelegatedAdminRelationshipStatus>() 
-            { DelegatedAdminRelationshipStatus.TerminationRequested, DelegatedAdminRelationshipStatus.Terminating }; }
+            if (fileName == "gdapRelationship_terminate")
+            {
+                return new List<DelegatedAdminRelationshipStatus>()
+            { DelegatedAdminRelationshipStatus.TerminationRequested, DelegatedAdminRelationshipStatus.Terminating };
+            }
 
             return new List<DelegatedAdminRelationshipStatus>()
             { DelegatedAdminRelationshipStatus.Approved };
@@ -341,22 +344,28 @@ namespace PartnerLed.Providers
         ///  Create GDAP relationship Object.
         /// </summary>
         /// <param name="type">Export type "JSON" or "CSV" based on user selection.</param>
+        /// <param name="inputCustomer"></param>
+        /// <param name="unifiedRoles"></param>
+        /// <param name="delegatedAdminRelationshipRequests"></param>
         /// <returns></returns>
-        public async Task<bool> CreateGDAPRequestAsync(ExportImport type)
+        public async Task<(List<DelegatedAdminRelationship> successfulGDAP, List<DelegatedAdminRelationshipErrored> failedGDAP)> CreateGDAPRequestAsync(
+            ExportImport type,
+            List<DelegatedAdminRelationshipRequest> inputCustomer,
+            List<UnifiedRole> roleList)
         {
             try
             {
-                var exportImportProvider = exportImportProviderFactory.Create(type);
-                var inputCustomer = await exportImportProvider.ReadAsync<DelegatedAdminRelationshipRequest>($"{Constants.InputFolderPath}/customers.{Helper.GetExtenstion(type)}");
-                var inputAdRole = await exportImportProvider.ReadAsync<ADRole>($"{Constants.InputFolderPath}/ADRoles.{Helper.GetExtenstion(type)}");
+                // var exportImportProvider = exportImportProviderFactory.Create(type);
+                // var inputCustomer = await exportImportProvider.ReadAsync<DelegatedAdminRelationshipRequest>($"{Constants.InputFolderPath}/customers.{Helper.GetExtenstion(type)}");
+                // var inputAdRole = await exportImportProvider.ReadAsync<ADRole>($"{Constants.InputFolderPath}/ADRoles.{Helper.GetExtenstion(type)}");
 
-                IEnumerable<UnifiedRole> roleList = inputAdRole.Select(x => new UnifiedRole() { RoleDefinitionId = x.Id.ToString() });
+                //IEnumerable<UnifiedRole> roleList = inputAdRole.Select(x => new UnifiedRole() { RoleDefinitionId = x.Id.ToString() });
 
-                var option = Helper.UserConfirmation($"Warning: There are {inputAdRole.Count} roles configured for creating GDAP relationship(s), are you sure you want to continue?");
-                if (!option)
-                {
-                    return true;
-                }
+                //var option = Helper.UserConfirmation($"Warning: There are {inputAdRole.Count} roles configured for creating GDAP relationship(s), are you sure you want to continue?");
+                //if (!option)
+                //{
+                //    return (null, null);
+                //}
                 var gdapList = new List<DelegatedAdminRelationship>();
                 foreach (var item in inputCustomer)
                 {
@@ -364,7 +373,7 @@ namespace PartnerLed.Providers
                     {
                         Customer = new DelegatedAdminRelationshipCustomerParticipant() { TenantId = item.CustomerTenantId, DisplayName = item.OrganizationDisplayName },
                         Partner = new DelegatedAdminRelationshipParticipant() { TenantId = item.PartnerTenantId.ToString() },
-                        DisplayName = item.Name.ToString(),
+                        DisplayName = $"GDAP_2023_{item.CustomerTenantId}",
                         Duration = $"P{item.Duration}D",
                         AccessDetails = new DelegatedAdminAccessDetails() { UnifiedRoles = roleList },
                     };
@@ -373,7 +382,7 @@ namespace PartnerLed.Providers
                 }
 
                 Console.WriteLine("Creating new relationship(s)...");
-                var url = $"{WebApiUrlAllGdaps}/migrate"; ;
+                var url = $"{WebApiUrlAllGdaps}/migrate";
                 var allgdapRelationList = new ConcurrentBag<DelegatedAdminRelationshipErrored>();
 
                 var options = new ParallelOptions()
@@ -383,22 +392,37 @@ namespace PartnerLed.Providers
                 protectedApiCallHelper.setHeader(false);
                 await Parallel.ForEachAsync(gdapList, options, async (g, cancellationToken) =>
                 {
-                    allgdapRelationList.Add(await PostGdapRelationship(url, g));
+                    int counter = 1;
+                    bool success = false;
+                    DelegatedAdminRelationshipErrored errored;
+                    do
+                    {
+                        errored = await PostGdapRelationship(url, g);
+
+                        if (errored.ErrorDetail != null && errored.ErrorDetail.Contains("The specified relationship name already exists with the current partner."))
+                            g.DisplayName = $"GDAP_{++counter}_{g.Customer.TenantId}";
+                        else
+                            success = true;
+                    } while (!success);
+
+                    allgdapRelationList.Add(errored);
                 });
 
                 // filtering the Relationship based on success
-                var successfulGDAP = allgdapRelationList.Where<DelegatedAdminRelationship>(item => item.Status == DelegatedAdminRelationshipStatus.Approved);
-                var failedGDAP = allgdapRelationList.Where(item => item.Status != DelegatedAdminRelationshipStatus.Approved || string.IsNullOrEmpty(item.Status.ToString()));
-                Console.WriteLine("Downloading GDAP Relationship(s)...");
-                if (customProperties.ReplaceFileDuringUpdate && File.Exists($"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}")) { 
+                var successfulGDAP = allgdapRelationList.Where<DelegatedAdminRelationship>(item => item.Status == DelegatedAdminRelationshipStatus.Approved).ToList();
+                var failedGDAP = allgdapRelationList.Where(item => item.Status != DelegatedAdminRelationshipStatus.Approved || string.IsNullOrEmpty(item.Status.ToString())).ToList();
+                // Console.WriteLine("Downloading GDAP Relationship(s)...");
+                if (customProperties.ReplaceFileDuringUpdate && File.Exists($"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}"))
+                {
                     Filehelper.RenameFolder($"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}");
                 }
-                await exportImportProvider.WriteAsync(successfulGDAP, $"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}");
-                if (failedGDAP.Any())
-                {
-                    await exportImportProvider.WriteAsync<DelegatedAdminRelationshipErrored>((IEnumerable<DelegatedAdminRelationshipErrored>)failedGDAP, $"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship_failed.{Helper.GetExtenstion(type)}");
-                }
-                Console.WriteLine($"Downloaded new GDAP Relationship(s) at {Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}");
+                //await exportImportProvider.WriteAsync(successfulGDAP, $"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}");
+                //if (failedGDAP.Any())
+                //{
+                //    await exportImportProvider.WriteAsync<DelegatedAdminRelationshipErrored>((IEnumerable<DelegatedAdminRelationshipErrored>)failedGDAP, $"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship_failed.{Helper.GetExtenstion(type)}");
+                //}
+                // Console.WriteLine($"Downloaded new GDAP Relationship(s): SUCCESS[{successfulGDAP.Count}] | FAILED[{failedGDAP.Count}]");
+                return (successfulGDAP, failedGDAP);
             }
             catch (IOException ex)
             {
@@ -410,7 +434,7 @@ namespace PartnerLed.Providers
                 Console.WriteLine($"Error occurred while save the Granular Relationship");
                 logger.LogError(ex.Message);
             }
-            return true;
+            return (null, null);
         }
 
         /// <summary>
@@ -418,22 +442,22 @@ namespace PartnerLed.Providers
         /// </summary>
         /// <param name="type">Export type "JSON" or "CSV" based on user selection.</param>
         /// <returns></returns>
-        public async Task<bool> GetAllGDAPAsync(ExportImport type)
+        public async Task<List<DelegatedAdminRelationship>?> GetAllGDAPAsync(ExportImport type)
         {
             try
             {
-                var exportImportProvider = exportImportProviderFactory.Create(type);
+                //var exportImportProvider = exportImportProviderFactory.Create(type);
                 var gdapList = new List<DelegatedAdminRelationship>();
                 var nextLink = string.Empty;
-                Console.WriteLine("Downloading relationship(s)...");
-                Helper.ResetSpin("Page.. ");
+                //Console.WriteLine("Downloading relationship(s)...");
+                //Helper.ResetSpin("Page.. ");
                 protectedApiCallHelper.setHeader(false);
                 do
                 {
                     var response = await GetGdapRelationships(nextLink);
                     var nextData = response.Properties().Where(p => p.Name.Contains("nextLink"));
                     nextLink = string.Empty;
-                    Helper.Spin();
+                    //Helper.Spin();
                     if (nextData != null)
                     {
                         nextLink = (string?)nextData.FirstOrDefault();
@@ -450,14 +474,15 @@ namespace PartnerLed.Providers
 
                 } while (!string.IsNullOrEmpty(nextLink));
 
-                await exportImportProvider.WriteAsync(gdapList, $"{Constants.OutputFolderPath}/ExistingGdapRelationship.{Helper.GetExtenstion(type)}");
-                Console.WriteLine($"\nDownloaded existing GDAP relationship(s) at {Constants.OutputFolderPath}/ExistingGdapRelationship.{Helper.GetExtenstion(type)}");
+                // await exportImportProvider.WriteAsync(gdapList, $"{Constants.OutputFolderPath}/ExistingGdapRelationship.{Helper.GetExtenstion(type)}");
+                // Console.WriteLine($"\nDownloaded existing GDAP relationship(s): " + gdapList.Count);
+                return gdapList;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
+                return null;
             }
-            return true;
         }
 
 
@@ -487,7 +512,7 @@ namespace PartnerLed.Providers
                 if (!inputRequest.Any())
                 {
                     Console.WriteLine($"No active relationships found to terminate, check the path {path}");
-                    return  true;
+                    return true;
                 }
 
                 var option = Helper.UserConfirmation($"Warning: There are {inputRequest.Count()} GDAP relationship(s) to terminate, are you sure you want to continue?");
@@ -503,7 +528,7 @@ namespace PartnerLed.Providers
                 {
                     MaxDegreeOfParallelism = 5
                 };
-                
+
                 await Parallel.ForEachAsync(inputRequest, options, async (g, cancellationToken) =>
                 {
                     responseList.Add(await UpdateTerminationStatus(g));

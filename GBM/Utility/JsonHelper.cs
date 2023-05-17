@@ -31,7 +31,7 @@ namespace PartnerLed.Utility
         /// <param name="data"></param>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public async Task WriteAsync<T>(IEnumerable<T> data, string fileName)
+        public async Task WriteAsync<T>(IEnumerable<T>? data, string fileName)
         {
             string jsonFile = JsonConvert.SerializeObject(data, Formatting.Indented);
             await File.WriteAllTextAsync(fileName, jsonFile);
