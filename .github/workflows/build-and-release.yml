@@ -35,7 +35,7 @@ jobs:
         run: dotnet publish --configuration Release --output ./publish -p:PublishSingleFile=true --self-contained true -p:DebugType=None -p:DebugSymbols=false -p:RuntimeIdentifier=win-x64
 
       - name: Zip files
-        run: zip -r gdapmigrationtool.zip ./publish/
+        run: zip -r gdapmigrationtool.zip ./publish/*
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
