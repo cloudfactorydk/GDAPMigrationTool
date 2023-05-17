@@ -17,7 +17,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x' # Replace with the desired .NET version
+          dotnet-version: '6.0.x'
 
       - name: Restore dependencies
         run: dotnet restore
@@ -26,21 +26,10 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Publish project
-        run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish --configuration Release --output ./publish -p:PublishSingleFile=true --self-contained true -p:DebugType=None -p:DebugSymbols=false
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          release_name: Release ${{ github.sha }}
-          tag_name: ${{ github.sha }}
-          draft: false
-          prerelease: false
-
-      - name: Upload executable
-        uses: actions/upload-artifact@v2
-        with:
-          name: Executable
-          path: ./publish
+          files: publish/*
