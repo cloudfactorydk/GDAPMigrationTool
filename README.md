@@ -1,33 +1,49 @@
-# Project
+# Get Microsoft GDAP under control before May 22nd
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+## Overview
+Granular Delegated Admin Permissions (GDAP) allows partners to access customer workloads in a more granular and time-bound manner, addressing customer security concerns and also helps customers who have regulatory requirements for least-privileged access to partners. Partners with Admin agent role can request GDAP relationship, have a maximum duration of two years and cannot be made permanent for security reasons.
 
-As the maintainer of this project, please make a few updates:
+In the current business landscape, many Managed Service Providers (MSPs) often retain administrative access to their customers' Global Admin (GA) accounts. It's paramount to adapt to evolving industry standards and showcase the exceptional value of your services as a CSP Partner. Security is key in gaining customer trust and confidence.
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+## Hypotheses
+1. The implementation of granular delegated admin permissions (GDAP) in partner-customer relationships will result in improved customer satisfaction, increased security, and enhanced partner performance.
+2. The next generation of MSPs, who prioritize security-first approaches and possess cloud-native expertise, will gain a competitive edge over traditional Microsoft partners who rely on shared Global Admin (GA) access, leading to greater customer acquisition and retention.
+3. By offering valuable consulting and services focused on security, MSPs can effectively demonstrate their expertise and differentiate themselves in the market, leading to increased customer engagement and higher revenue generation.
 
 ## Contributing
+Cloud Factory welcomes contributions and suggestions to enhance its platform. Please ensure you agree to the Contributor License Agreement (CLA), which grants us the necessary rights to use your contributions. Detailed information about the CLA is available [here](https://cla.opensource.microsoft.com).
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+When submitting a pull request, a CLA bot will automatically assess if a CLA is required and will provide appropriate status checks and comments. Please follow the instructions provided by the bot. Note that you only need to complete this process once across all repositories that utilize our CLA.
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+Cloud Factory operates under the Microsoft Open Source Code of Conduct, ensuring a respectful and inclusive environment for all contributors. If you have any questions or comments regarding the Code of Conduct, please reach out to opencode@microsoft.com.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## What You Get
+1. Create an admin relationship between all customers and you as a Microsoft Partner to start the delegated access.
+2. On the new relationship, we assign the roles listed below and set the duration to 730 days.
 
-## Trademarks
+## Migration Process
+1. Download the GDAP Migration tool and run it.
+2. Sign in with your Microsoft 365 GA Partner Account when prompted (Browser opens).
+3. Please don't close the browser and don't close the tool.
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+## Roles
+The list of roles is based on Microsoft Indirect Reseller GDAP recommendations. The Cloud Factory team added Directory Writers and Global Reader for maximum benefit.
+
+* Authentication Administrator
+* Desktop Analytics Administrator
+* Directory Readers
+* Directory Writers
+* Exchange Administrator
+* Global Reader
+* Groups Administrator
+* Guest Inviter
+* Helpdesk Administrator
+* Intune Administrator
+* License Administrator
+* Message Center Reader
+* Printer Administrator
+* Security Reader
+* Service Support Administrator
+* SharePoint Administrator
+* Teams Communications Support Specialist
+* User Administrator
