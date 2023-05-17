@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using CloudFactoryGdapMigrator.Utility;
 using GBM.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
@@ -42,7 +43,7 @@ namespace PartnerLed
             IConfigurationRoot Configuration;
 
             var builder = new ConfigurationBuilder()
-             .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
+             .SetBasePath(GetCurrentPathHelper.GetCurrentPath())
              .AddJsonFile($"Configuration/{path}");
 
             Configuration = builder.Build();

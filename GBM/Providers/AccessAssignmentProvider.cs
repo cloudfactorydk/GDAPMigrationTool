@@ -7,6 +7,7 @@ using Newtonsoft.Json.Serialization;
 using PartnerLed.Model;
 using PartnerLed.Utility;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Net;
 
 namespace PartnerLed.Providers
@@ -100,7 +101,7 @@ namespace PartnerLed.Providers
         /// Generate the Security Group list from Graph Endpoint.
         /// </summary>
         /// <returns> true </returns>
-        public async Task<bool> ExportSecurityGroup(ExportImport type)
+        public async Task<List<SecurityGroup?>?> ExportSecurityGroup(ExportImport type)
         {
             try
             {
@@ -108,7 +109,7 @@ namespace PartnerLed.Providers
                 var nextLink = string.Empty;
                 var securityGroup = new List<SecurityGroup?>();
 
-                Console.WriteLine("Getting Security Groups");
+                Console.WriteLine("\nUpdating Security Groups");
                 protectedApiCallHelper.setHeader(true);
 
                 do
@@ -141,17 +142,17 @@ namespace PartnerLed.Providers
                         Console.WriteLine($"{userResponse}");
                     }
                 } while (!string.IsNullOrEmpty(nextLink));
-                var writer = exportImportProviderFactory.Create(type);
-                await writer.WriteAsync(securityGroup, $"{Constants.OutputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}");
-                Console.WriteLine($"Downloaded Security Groups at {Constants.OutputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}");
+                //var writer = exportImportProviderFactory.Create(type);
+                //await writer.WriteAsync(securityGroup, $"{Constants.OutputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}");
+                // Console.WriteLine($"Downloaded Security Groups: " + securityGroup.Count);
+                return securityGroup;
             }
 
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
+                return null;
             }
-            return true;
-
         }
 
         /// <summary>
@@ -229,12 +230,12 @@ namespace PartnerLed.Providers
             switch (file)
             {
                 case "accessAssignment":
-                    return new List<string>(){"pending","active"};
+                    return new List<string>() { "pending", "active" };
                 case "accessAssignment_update":
-                    return new List<string>(){"pending","active"};
+                    return new List<string>() { "pending", "active" };
                 case "accessAssignment_delete":
-                    return new List<string>(){"deleting"};
-                default: return new List<string>(){"active"};
+                    return new List<string>() { "deleting" };
+                default: return new List<string>() { "active" };
             }
         }
 
@@ -242,42 +243,47 @@ namespace PartnerLed.Providers
         /// Create bulk Delegated Admin relationship access assignment.
         /// </summary>
         /// <returns>true </returns>
-        public async Task<bool> CreateAccessAssignmentRequestAsync(ExportImport type)
+        public async Task<(IEnumerable<DelegatedAdminAccessAssignmentRequest> successfulAccessAssignment, IEnumerable<DelegatedAdminAccessAssignmentRequest> failedAccessAssignment
+            )> CreateAccessAssignmentRequestAsync(
+            ExportImport type,
+            List<SecurityGroup> securityGroupList,
+            List<ADRole> rolesForSecurityGroup,
+            List<DelegatedAdminRelationship> gDapRelationshipList)
         {
             try
             {
-                var exportImportProvider = exportImportProviderFactory.Create(type);
-                var gDapFilepath = $"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}";
-                var gDapRelationshipList = await exportImportProvider.ReadAsync<DelegatedAdminRelationship>(gDapFilepath);
-                Console.WriteLine($"Reading files @ {gDapFilepath}");
+                //var exportImportProvider = exportImportProviderFactory.Create(type);
+                //var gDapFilepath = $"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}";
+                //var gDapRelationshipList = await exportImportProvider.ReadAsync<DelegatedAdminRelationship>(gDapFilepath);
+                //Console.WriteLine($"Reading files @ {gDapFilepath}");
 
-                var azureRoleFilePath = $"{Constants.InputFolderPath}/ADRoles.{Helper.GetExtenstion(type)}";
-                Console.WriteLine($"Reading files @ {azureRoleFilePath}");
-                var inputAdRole = await exportImportProvider.ReadAsync<ADRole>(azureRoleFilePath);
+                //var azureRoleFilePath = $"{Constants.InputFolderPath}/ADRoles.{Helper.GetExtenstion(type)}";
+                //Console.WriteLine($"Reading files @ {azureRoleFilePath}");
+                //var inputAdRole = await exportImportProvider.ReadAsync<ADRole>(azureRoleFilePath);
 
-                var securityRolepath = $"{Constants.InputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}";
-                Console.WriteLine($"Reading files @ {securityRolepath}");
-                var securityGroupList = await exportImportProvider.ReadAsync<SecurityGroup>(securityRolepath);
+                //var securityRolepath = $"{Constants.InputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}";
+                //Console.WriteLine($"Reading files @ {securityRolepath}");
+                //var securityGroupList = await exportImportProvider.ReadAsync<SecurityGroup>(securityRolepath);
 
-                if (!securityGroupList.Any())
-                {
-                    throw new Exception($"No security groups found in gdapbulkmigration/securitygroup.{Helper.GetExtenstion(type)}");
-                }
+                //if (!securityGroupList.Any())
+                //{
+                //    throw new Exception($"No security groups found in gdapbulkmigration/securitygroup.{Helper.GetExtenstion(type)}");
+                //}
 
-                if (securityGroupList.Any(item => string.IsNullOrEmpty(item.CommaSeperatedRoles)))
-                {
-                    throw new Exception($"One or more security groups do not have roles mapped in gdapbulkmigration/securitygroup.{Helper.GetExtenstion(type)}");
-                }
+                //if (securityGroupList.Any(item => string.IsNullOrEmpty(item.CommaSeperatedRoles)))
+                //{
+                //    throw new Exception($"One or more security groups do not have roles mapped in gdapbulkmigration/securitygroup.{Helper.GetExtenstion(type)}");
+                //}
 
-                var option = Helper.UserConfirmation($"Waring: There are {securityGroupList.Count} Security Groups configured for Access Assignment, are you sure you want to continue with this?");
-                if (!option)
-                {
-                    return true;
-                }
+                //var option = Helper.UserConfirmation($"Waring: There are {securityGroupList.Count} Security Groups configured for Access Assignment, are you sure you want to continue with this?");
+                //if (!option)
+                //{
+                //    return true;
+                //}
                 var list = new List<DelegatedAdminAccessAssignment>();
                 var responseList = new List<DelegatedAdminAccessAssignmentRequest>();
                 // get the unique AD roles 
-                list.AddRange(from SecurityGroup? item in securityGroupList select GetAdminAccessAssignmentObject(item.Id, item.Roles, inputAdRole));
+                list.AddRange(from SecurityGroup? item in securityGroupList select GetAdminAccessAssignmentObject(item.Id, item.Roles, rolesForSecurityGroup));
 
                 var inputList = gDapRelationshipList.Where(g => g.Status == DelegatedAdminRelationshipStatus.Active).ToList();
 
@@ -291,27 +297,27 @@ namespace PartnerLed.Providers
                         responseList.AddRange(collection);
                     }
 
-                    if (customProperties.ReplaceFileDuringUpdate && File.Exists($"{Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}"))
-                    {
-                        Filehelper.RenameFolder($"{Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}");
-                    }
+                    //if (customProperties.ReplaceFileDuringUpdate && File.Exists($"{Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}"))
+                    //{
+                    //    Filehelper.RenameFolder($"{Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}");
+                    //}
 
                     //separating the failed 
                     var failedStatus = new List<string> { "error", "failed" };
-                    var SucessfulAccessAssignment = responseList.Where(item => !failedStatus.Contains(item.Status.ToLower()) && !string.IsNullOrEmpty(item.Status));
-                    var failedAccessAssignment = responseList.Where(item => string.IsNullOrEmpty(item.Status) || failedStatus.Contains(item.Status.ToLower()));
-                    
-                    if (failedAccessAssignment.Any())
-                    {
-                        //Generating the failed file
-                        await exportImportProvider.WriteAsync(failedAccessAssignment, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_failed.{Helper.GetExtenstion(type)}");
-                    }
-                    
-                    await exportImportProvider.WriteAsync(SucessfulAccessAssignment, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}");
-                    // Generating a UPDATE FILE 
-                    await exportImportProvider.WriteAsync(SucessfulAccessAssignment, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_update.{Helper.GetExtenstion(type)}");
-                    Console.WriteLine($"Downloaded Access Assignment(s) at {Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}");
+                    var successfulAccessAssignment = responseList.Where(item => !failedStatus.Contains(item.Status.ToLower()) && !string.IsNullOrEmpty(item.Status)).ToList();
+                    var failedAccessAssignment = responseList.Where(item => string.IsNullOrEmpty(item.Status) || failedStatus.Contains(item.Status.ToLower())).ToList();
 
+                    //if (failedAccessAssignment.Any())
+                    //{
+                    //    //Generating the failed file
+                    //    await exportImportProvider.WriteAsync(failedAccessAssignment, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_failed.{Helper.GetExtenstion(type)}");
+                    //}
+
+                    //await exportImportProvider.WriteAsync(SucessfulAccessAssignment, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment.{Helper.GetExtenstion(type)}");
+                    //// Generating a UPDATE FILE 
+                    //await exportImportProvider.WriteAsync(SucessfulAccessAssignment, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_update.{Helper.GetExtenstion(type)}");
+                    Console.WriteLine($"Downloaded Access Assignment(s): SUCCESS[{successfulAccessAssignment.Count}] | FAILED[{failedAccessAssignment.Count}]");
+                    return (successfulAccessAssignment, failedAccessAssignment);
                 }
                 catch
                 {
@@ -325,7 +331,7 @@ namespace PartnerLed.Providers
             }
 
 
-            return true;
+            return (null, null);
         }
 
         /// <summary>
@@ -335,7 +341,7 @@ namespace PartnerLed.Providers
         /// <param name="data"></param>
         /// <param name="SecurityGroupList"></param>
         /// <returns>DelegatedAdminAccessAssignmentRequest</returns>
-        private async Task<DelegatedAdminAccessAssignmentRequest?> PostGranularAdminAccessAssignment(DelegatedAdminRelationship gdapRelationship, DelegatedAdminAccessAssignment data, IEnumerable<SecurityGroup> SecurityGroupList)
+        public async Task<DelegatedAdminAccessAssignmentRequest?> PostGranularAdminAccessAssignment(DelegatedAdminRelationship gdapRelationship, DelegatedAdminAccessAssignment data, IEnumerable<SecurityGroup> SecurityGroupList)
         {
             try
             {
@@ -351,7 +357,7 @@ namespace PartnerLed.Providers
                     }).ToString());
 
                 string userResponse = GetUserResponse(response.StatusCode);
-                Console.WriteLine($"{gdapRelationship.Id}-{userResponse}");
+                Console.WriteLine($"{gdapRelationship.Customer.DisplayName} - SecurityGroup updated");
 
                 var accessAssignmentObject = response.IsSuccessStatusCode
                     ? JsonConvert.DeserializeObject<DelegatedAdminAccessAssignment>(response.Content.ReadAsStringAsync().Result)
@@ -366,7 +372,7 @@ namespace PartnerLed.Providers
                     AccessAssignmentId = accessAssignmentObject.Id,
                     SecurityGroupId = accessAssignmentObject.AccessContainer?.AccessContainerId,
                     SecurityGroupName = GetGroupName(accessAssignmentObject.AccessContainer?.AccessContainerId, SecurityGroupList),
-                    CommaSeperatedRoles = accessAssignmentObject.AccessDetails != null ? 
+                    CommaSeperatedRoles = accessAssignmentObject.AccessDetails != null ?
                     string.Join(",", accessAssignmentObject.AccessDetails?.UnifiedRoles.Select(item => item.RoleDefinitionId)) : string.Empty,
                     Status = accessAssignmentObject.Status,
                     Etag = accessAssignmentObject.ETag,
@@ -438,7 +444,7 @@ namespace PartnerLed.Providers
         /// <param name="accessAssignmentId"></param>
         /// <param name="SecurityGroupList"></param>
         /// <returns>DelegatedAdminAccessAssignmentRequest</returns>
-        private async Task<DelegatedAdminAccessAssignmentRequest?> GetDelegatedAdminAccessAssignment(DelegatedAdminAccessAssignmentRequest delegatedAdminAccessAssignmentRequest, string accessAssignmentId, IEnumerable<SecurityGroup> SecurityGroupList)
+        private async Task<DelegatedAdminAccessAssignmentRequest> GetDelegatedAdminAccessAssignment(DelegatedAdminAccessAssignmentRequest delegatedAdminAccessAssignmentRequest, string accessAssignmentId, IEnumerable<SecurityGroup> SecurityGroupList)
         {
             var gdapId = delegatedAdminAccessAssignmentRequest.GdapRelationshipId;
             var CustomerDetails = delegatedAdminAccessAssignmentRequest.Customer;
@@ -548,67 +554,75 @@ namespace PartnerLed.Providers
         /// Update bulk Delegated Admin relationship access assignment.
         /// </summary>
         /// <returns>true </returns>
-        public async Task<bool> UpdateAccessAssignmentRequestAsync(ExportImport type)
+        public async Task<List<DelegatedAdminAccessAssignmentRequest>?> UpdateAccessAssignmentRequestAsync(
+            ExportImport type,
+            List<ADRole> roles,
+            SecurityGroup securityGroup,
+            IEnumerable<DelegatedAdminAccessAssignmentRequest> accessAssignmentList)
         {
             try
             {
-                var exportImportProvider = exportImportProviderFactory.Create(type);
-                var azureRoleFilePath = $"{Constants.InputFolderPath}/ADRoles.{Helper.GetExtenstion(type)}";
-                Console.WriteLine($"Reading file @ {azureRoleFilePath}");
-                var inputAdRole = await exportImportProvider.ReadAsync<ADRole>(azureRoleFilePath);
+                // var exportImportProvider = exportImportProviderFactory.Create(type);
+                // var azureRoleFilePath = $"{Constants.InputFolderPath}/ADRoles.{Helper.GetExtenstion(type)}";
+                // Console.WriteLine($"Reading file @ {azureRoleFilePath}");
+                // var inputAdRole = await exportImportProvider.ReadAsync<ADRole>(azureRoleFilePath);
 
-                var securityRolepath = $"{Constants.InputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}";
-                Console.WriteLine($"Reading file @ {securityRolepath}");
-                var accessAssignmentFilepath = $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_update.{Helper.GetExtenstion(type)}";
-                var accessAssignmentList = await exportImportProvider.ReadAsync<DelegatedAdminAccessAssignmentRequest>(accessAssignmentFilepath);
-                Console.WriteLine($"Reading file @ {accessAssignmentFilepath}");
-                var inputRequest = accessAssignmentList?.Where(x => x.Status.ToLower() == "active").ToList();
-                var remainingDataList = accessAssignmentList?.Where(x => x.Status.ToLower() != "active").ToList();
-                var securityGroupList = await exportImportProvider.ReadAsync<SecurityGroup>(securityRolepath);
+                // var securityRolepath = $"{Constants.InputFolderPath}/securityGroup.{Helper.GetExtenstion(type)}";
+                // Console.WriteLine($"Reading file @ {securityRolepath}");
+                // var accessAssignmentFilepath = $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_update.{Helper.GetExtenstion(type)}";
+                // var accessAssignmentList = await exportImportProvider.ReadAsync<DelegatedAdminAccessAssignmentRequest>(accessAssignmentFilepath);
+                // Console.WriteLine($"Reading file @ {accessAssignmentFilepath}");
+                //var inputRequest = accessAssignmentList?.Where(x => x.Status.ToLower() == "active").ToList();
+                //var remainingDataList = accessAssignmentList?.Where(x => x.Status.ToLower() != "active").ToList();
+                // var securityGroupList = await exportImportProvider.ReadAsync<SecurityGroup>(securityRolepath);
 
-                if (!inputRequest.Any())
-                {
-                    throw new Exception("Error while processing the input. Incorrect data provided for processing. Please check the input file.");
-                }
+                //var assignment = await GetDelegatedAdminAccessAssignment(delegatedAdminAccessAssignmentRequest, delegatedAdminAccessAssignmentRequest.AccessAssignmentId, securityGroupList);
+                //var accessAssignmentList = new List<DelegatedAdminAccessAssignmentRequest> { assignment };
+
+                //if (!inputRequest.Any())
+                //{
+                //    throw new Exception("Error while processing the input. Incorrect data provided for processing. Please check the input file.");
+                //}
 
 
-                if (inputRequest.Any(item => string.IsNullOrEmpty(item.CommaSeperatedRoles)))
-                {
-                    throw new Exception($"One or more security groups do not have roles mapped in GDAPBulkMigration/operations/accessAssignment_update.{Helper.GetExtenstion(type)}");
-                }
+                //if (inputRequest.Any(item => string.IsNullOrEmpty(item.CommaSeperatedRoles)))
+                //{
+                //    throw new Exception($"One or more security groups do not have roles mapped in GDAPBulkMigration/operations/accessAssignment_update.{Helper.GetExtenstion(type)}");
+                //}
 
-                var option = Helper.UserConfirmation($"Waring: There are {inputRequest.Count()} access assignment for update, are you sure you want to continue?");
-                if (!option)
-                {
-                    return true;
-                }
+                //var option = Helper.UserConfirmation($"Waring: There are {inputRequest.Count()} access assignment for update, are you sure you want to continue?");
+                //if (!option)
+                //{
+                //    return null;
+                //}
                 var list = new List<DelegatedAdminAccessAssignment>();
                 // get the unique AD roles 
-                list.AddRange(from DelegatedAdminAccessAssignmentRequest? item in inputRequest select GetAdminAccessAssignmentObject(item.SecurityGroupId, item.Roles, inputAdRole, item.AccessAssignmentId));
+                //list.AddRange(from DelegatedAdminAccessAssignmentRequest? item in assignments select GetAdminAccessAssignmentObject(item.SecurityGroupId, item.Roles, roles, item.AccessAssignmentId));
                 var responseList = new List<DelegatedAdminAccessAssignmentRequest>();
                 Console.WriteLine("Updating Access Assignment..");
                 foreach (var accessAssignment in accessAssignmentList)
                 {
                     protectedApiCallHelper.setHeader(false);
                     var tasks = list?.Where(item => item.Id == accessAssignment.AccessAssignmentId)
-                                     .Select(item => UpdateDelegatedAdminAccessAssignment(accessAssignment, item, securityGroupList));
+                                     .Select(item => UpdateDelegatedAdminAccessAssignment(accessAssignment, item, new List<SecurityGroup> { securityGroup }));
                     DelegatedAdminAccessAssignmentRequest?[] collection = await Task.WhenAll(tasks);
                     responseList.AddRange(collection);
                 }
 
-                if (remainingDataList.Any())
-                {
-                    responseList.AddRange(remainingDataList);
-                }
+                //if (remainingDataList.Any())
+                //{
+                //    responseList.AddRange(remainingDataList);
+                //}
 
-                await exportImportProvider.WriteAsync(responseList, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_update.{Helper.GetExtenstion(type)}");
-                Console.WriteLine($"Downloaded Access Assignment(s) at {Constants.InputFolderPath}/accessAssignment/accessAssignment-update.{Helper.GetExtenstion(type)}");
+                //await exportImportProvider.WriteAsync(responseList, $"{Constants.InputFolderPath}/accessAssignment/accessAssignment_update.{Helper.GetExtenstion(type)}");
+                Console.WriteLine($"Downloaded Access Assignment(s): {responseList.Count}");
+                return responseList;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
             }
-            return true;
+            return null;
         }
 
         /// <summary>
@@ -685,7 +699,7 @@ namespace PartnerLed.Providers
         /// </summary>
         /// <param name="delegatedAdminAccessAssignmentRequest"></param>
         /// <returns>DelegatedAdminAccessAssignmentRequest</returns>
-        private async Task<DelegatedAdminAccessAssignmentRequest?> DeleteDelegatedAdminAccessAssignment(DelegatedAdminAccessAssignmentRequest delegatedAdminAccessAssignmentRequest)
+        private async Task<DelegatedAdminAccessAssignmentRequest> DeleteDelegatedAdminAccessAssignment(DelegatedAdminAccessAssignmentRequest delegatedAdminAccessAssignmentRequest)
         {
             var gdapRelationshipId = delegatedAdminAccessAssignmentRequest.GdapRelationshipId;
             var accessAssignmentId = delegatedAdminAccessAssignmentRequest.AccessAssignmentId;
@@ -744,7 +758,7 @@ namespace PartnerLed.Providers
                 var responseList = new ConcurrentBag<DelegatedAdminAccessAssignmentRequest>();
                 Console.WriteLine("Deleting access assignment..");
                 protectedApiCallHelper.setHeader(false);
-                               
+
                 if (inputRequest.Any())
                 {
                     inputRequest.ForEach((delegatedAdminAccessAssignment) =>
