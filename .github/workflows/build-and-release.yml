@@ -34,9 +34,11 @@ jobs:
       - name: Publish project
         run: dotnet publish --configuration Release --output ./publish -p:PublishSingleFile=true --self-contained true -p:DebugType=None -p:DebugSymbols=false -p:RuntimeIdentifier=win-x64
 
-      - name: Create Release
-        id: create_release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
+      - name: Zip files
+        run: zip -r gdapmigrationtool.zip ./publish/
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
         with:
-          files: publish/*
+          name: gdapmigrationtool
+          path: gdapmigrationtool.zip
