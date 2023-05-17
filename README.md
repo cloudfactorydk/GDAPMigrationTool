@@ -5,6 +5,11 @@ Granular Delegated Admin Permissions (GDAP) allows partners to access customer w
 
 In the current business landscape, many Managed Service Providers (MSPs) often retain administrative access to their customers' Global Admin (GA) accounts. It's paramount to adapt to evolving industry standards and showcase the exceptional value of your services as a CSP Partner. Security is key in gaining customer trust and confidence.
 
+## How to use
+1. [Download](https://github.com/cloudfactorydk/GDAPMigrationTool/releases) the GDAP Migration tool and run it.
+2. Sign in with your Microsoft 365 GA Partner Account when prompted (Browser opens).
+3. Please don't close the browser and don't close the tool.
+
 ## Hypotheses
 1. The implementation of granular delegated admin permissions (GDAP) in partner-customer relationships will result in improved customer satisfaction, increased security, and enhanced partner performance.
 2. The next generation of MSPs, who prioritize security-first approaches and possess cloud-native expertise, will gain a competitive edge over traditional Microsoft partners who rely on shared Global Admin (GA) access, leading to greater customer acquisition and retention.
@@ -20,11 +25,6 @@ Cloud Factory operates under the Microsoft Open Source Code of Conduct, ensuring
 ## What You Get
 1. Create an admin relationship between all customers and you as a Microsoft Partner to start the delegated access.
 2. On the new relationship, we assign the roles listed below and set the duration to 730 days.
-
-## Migration Process
-1. Download the GDAP Migration tool and run it.
-2. Sign in with your Microsoft 365 GA Partner Account when prompted (Browser opens).
-3. Please don't close the browser and don't close the tool.
 
 ## Roles
 The list of roles is based on Microsoft Indirect Reseller GDAP recommendations. The Cloud Factory team added Directory Writers and Global Reader for maximum benefit.
