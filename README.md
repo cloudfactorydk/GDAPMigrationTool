@@ -52,7 +52,6 @@ The list of roles is based on Microsoft Indirect Reseller GDAP recommendations. 
 
 The list of roles is based on Microsoft Direct Partner GDAP recommendations. 
 
-Direct Partner
 * Cloud Application Administrator
 * Directory Readers
 * Global Reader
