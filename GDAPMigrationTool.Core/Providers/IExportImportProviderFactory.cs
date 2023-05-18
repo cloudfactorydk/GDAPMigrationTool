@@ -2,7 +2,7 @@
 
 namespace PartnerLed.Providers
 {
-    internal interface IExportImportProviderFactory
+    public interface IExportImportProviderFactory
     {
         IExportImportProvider Create(ExportImport type);
     }

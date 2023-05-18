@@ -9,7 +9,7 @@ using Attribute = PartnerLed.Model.Attribute;
 
 namespace PartnerLed.Providers
 {
-    internal class CustomerProvider : ICustomerProvider
+    public class CustomerProvider : ICustomerProvider
     {
         /// <summary>
         /// The token provider.

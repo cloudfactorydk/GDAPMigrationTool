@@ -3,7 +3,7 @@ using PartnerLed.Utility;
 
 namespace PartnerLed.Providers
 {
-    internal class ExportImportProviderFactory : IExportImportProviderFactory
+    public class ExportImportProviderFactory : IExportImportProviderFactory
     {
         public IExportImportProvider Create(ExportImport type)
         {

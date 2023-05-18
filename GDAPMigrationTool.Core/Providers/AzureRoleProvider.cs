@@ -7,8 +7,7 @@ using System.Reflection;
 
 namespace PartnerLed.Providers
 {
-
-    internal class AzureRoleProvider : IAzureRoleProvider
+    public class AzureRoleProvider : IAzureRoleProvider
     {
 
         /// <summary>

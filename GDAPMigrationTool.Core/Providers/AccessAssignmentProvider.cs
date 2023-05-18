@@ -12,7 +12,7 @@ using System.Net;
 
 namespace PartnerLed.Providers
 {
-    internal class AccessAssignmentProvider : IAccessAssignmentProvider
+    public class AccessAssignmentProvider : IAccessAssignmentProvider
     {
         /// <summary>
         /// The token provider.

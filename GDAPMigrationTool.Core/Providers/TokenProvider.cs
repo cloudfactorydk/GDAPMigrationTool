@@ -1,11 +1,10 @@
 ﻿using Microsoft.Identity.Client;
 using PartnerLed.Model;
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace PartnerLed.Providers
 {
-    internal class TokenProvider : ITokenProvider
+    public class TokenProvider : ITokenProvider
     {
 
         // <summary>
