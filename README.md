@@ -1,4 +1,5 @@
 # Get Microsoft GDAP under control before May 22nd
+Latest version supports Indirect Resellers, Direct Partner and Indirect Provider. See build-in roles below.
 
 ## Overview
 Granular Delegated Admin Permissions (GDAP) allows partners to access customer workloads in a more granular and time-bound manner, addressing customer security concerns and also helps customers who have regulatory requirements for least-privileged access to partners. Partners with Admin agent role can request GDAP relationship, have a maximum duration of two years and cannot be made permanent for security reasons.
@@ -26,7 +27,8 @@ Cloud Factory operates under the Microsoft Open Source Code of Conduct, ensuring
 1. Create an admin relationship between all customers and you as a Microsoft Partner to start the delegated access.
 2. On the new relationship, we assign the roles listed below and set the duration to 730 days.
 
-## Roles
+## Roles Indirect Resellers, Direct Partner, Indirect Provider
+
 The list of roles is based on Microsoft Indirect Reseller GDAP recommendations. The Cloud Factory team added Directory Writers and Global Reader for maximum benefit.
 
 * Authentication Administrator
@@ -47,3 +49,30 @@ The list of roles is based on Microsoft Indirect Reseller GDAP recommendations. 
 * SharePoint Administrator
 * Teams Communications Support Specialist
 * User Administrator
+
+The list of roles is based on Microsoft Direct Partner GDAP recommendations. 
+
+Direct Partner
+Cloud Application Administrator
+Directory Readers
+Global Reader
+Helpdesk Administrator
+License Administrator
+Privileged Authentication Administrator
+Service Support Administrator
+User Administrator
+
+The list of roles is based on Microsoft Indirect Provider GDAP recommendations. The Cloud Factory team added Cloud Application Administrator and Privileged Authentication Administrator for maximum benefit. 
+
+Cloud Application Administrator
+Directory Readers
+Directory Writers
+Global Reader
+Helpdesk Administrator
+License Administrator
+Privileged Authentication Administrator
+Service Support Administrator
+User Administrator
+
+
+
