@@ -53,26 +53,26 @@ The list of roles is based on Microsoft Indirect Reseller GDAP recommendations. 
 The list of roles is based on Microsoft Direct Partner GDAP recommendations. 
 
 Direct Partner
-Cloud Application Administrator
-Directory Readers
-Global Reader
-Helpdesk Administrator
-License Administrator
-Privileged Authentication Administrator
-Service Support Administrator
-User Administrator
+* Cloud Application Administrator
+* Directory Readers
+* Global Reader
+* Helpdesk Administrator
+* License Administrator
+* Privileged Authentication Administrator
+* Service Support Administrator
+* User Administrator
 
 The list of roles is based on Microsoft Indirect Provider GDAP recommendations. The Cloud Factory team added Cloud Application Administrator and Privileged Authentication Administrator for maximum benefit. 
 
-Cloud Application Administrator
-Directory Readers
-Directory Writers
-Global Reader
-Helpdesk Administrator
-License Administrator
-Privileged Authentication Administrator
-Service Support Administrator
-User Administrator
+* Cloud Application Administrator
+* Directory Readers
+* Directory Writers
+* Global Reader
+* Helpdesk Administrator
+* License Administrator
+* Privileged Authentication Administrator
+* Service Support Administrator
+* User Administrator
 
 
 
