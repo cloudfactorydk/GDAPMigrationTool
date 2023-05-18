@@ -4,6 +4,10 @@ Latest version supports Indirect Resellers, Direct Partner and Indirect Provider
 # Microsoft Partner Center Announcements 2022 November no. 24 
 https://learn.microsoft.com/en-us/partner-center/announcements/2022-november#24
 
+Summary - important!
+
+To avoid disruption to your business, we recommend that you don't delay until March 2023 and act now to transition to GDAP for the level of access that you require to manage your customers. The limited GDAP roles (Directory reader, Global reader, User administrator, License administrator, Service support administrator, Helpdesk administrator) granted by Microsoft during the transition will only allow you to perform least-privilege activities. All other access permissions (such as access to Exchange workloads) will be lost. To perform all other activities, additional GDAP roles must be granted by the customer.
+
 ## Overview
 Granular Delegated Admin Permissions (GDAP) allows partners to access customer workloads in a more granular and time-bound manner, addressing customer security concerns and also helps customers who have regulatory requirements for least-privileged access to partners. Partners with Admin agent role can request GDAP relationship, have a maximum duration of two years and cannot be made permanent for security reasons.
 
