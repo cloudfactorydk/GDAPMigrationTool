@@ -14,6 +14,9 @@
     <None Remove="Configuration\ADRoles.json" />
     <None Remove="Configuration\ADRoleTemplatesAll.json" />
     <None Remove="Configuration\appsettings.json" />
+    <None Remove="Roles\roles_direct-bill-partner.csv" />
+    <None Remove="Roles\roles_indirect-reseller.csv" />
+    <None Remove="Roles\roles_indirect_provider.csv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +36,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Configuration\appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Roles\roles_direct-bill-partner.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Roles\roles_indirect-reseller.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Roles\roles_indirect_provider.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

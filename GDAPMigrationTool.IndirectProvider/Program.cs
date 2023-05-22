@@ -59,6 +59,12 @@ static async Task RunAsync(IServiceProvider serviceProvider, string version)
 
 static async Task Migrate(IServiceProvider serviceProvider, ExportImport type)
 {
+    // https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#role-template-ids
+    var rolesFromFile = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Roles", "roles_indirect_provider.csv"));
+    List<UnifiedRole> roles = new();
+    foreach (string roleId in rolesFromFile.Split(';'))
+        roles.Add(new() { RoleDefinitionId = roleId });
+
     List<DelegatedAdminRelationshipRequest>? allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(type);
     foreach (var customer in allCustomers)
         customer.Duration = "730";
@@ -73,20 +79,6 @@ static async Task Migrate(IServiceProvider serviceProvider, ExportImport type)
         .Select(x => x.Customer.TenantId)
         .ToHashSet();
     var customersToProcess = allCustomers.Where(x => !customerIdsToIgnore.Contains(x.CustomerTenantId)).ToList();
-
-    var roles = new List<UnifiedRole>
-    {
-        // https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#role-template-ids
-        new () { RoleDefinitionId = "158c047a-c907-4556-b7ef-446551a6b5f7" },
-        new () { RoleDefinitionId = "88d8e3e3-8f55-4a1e-953a-9b9898b8876b" },
-        new () { RoleDefinitionId = "9360feb5-f418-4baa-8175-e2a00bac4301" },
-        new () { RoleDefinitionId = "f2ef992c-3afb-46b9-b7cf-a126ee74c451" },
-        new () { RoleDefinitionId = "729827e3-9c14-49f7-bb1b-9608f156bbb8" },
-        new () { RoleDefinitionId = "4d6ac14f-3453-41d0-bef9-a3e0c569773a" },
-        new () { RoleDefinitionId = "7be44c8a-adaf-4e2a-84d6-ab2649e08a13" },
-        new () { RoleDefinitionId = "f023fd81-a637-4b56-95fd-791ac0226033" },
-        new () { RoleDefinitionId = "fe930be7-5e62-47db-91af-98c3a49a38b1" },
-    };
 
     var createGdapForCustomer = await serviceProvider.GetRequiredService<IGdapProvider>().CreateGDAPRequestAsync(type, customersToProcess, roles);
 
