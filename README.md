@@ -80,6 +80,9 @@ The list of roles is based on Microsoft Indirect Provider GDAP recommendations. 
 * Service Support Administrator
 * User Administrator
 
+See the complete list:
+https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#role-template-ids
+
 
 ##  Security Center on the Partner Center
 
