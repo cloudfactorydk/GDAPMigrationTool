@@ -1,5 +1,5 @@
 # Get Microsoft GDAP under control with Cloud Factory
-Latest version supports Indirect Resellers, Direct Partner and Indirect Provider. See built-in roles below.
+Latest version allows to edit roles and supports Indirect Resellers, Direct Partner and Indirect Provider. See built-in roles below.
 
 # Microsoft Partner Center Announcements 2023 May no. 11
 New timeline!
