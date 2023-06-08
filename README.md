@@ -1,4 +1,6 @@
 # Get Microsoft GDAP under control with Cloud Factory
+What's GDAP? Explained in 3 min from our Founder Jacob Schmidt https://www.youtube.com/watch?v=zFmnQQduzls&t
+
 Latest version allows to edit roles and supports Indirect Resellers, Direct Partner and Indirect Provider. See built-in roles below.
 
 # Microsoft Partner Center Announcements 2023 May no. 11
