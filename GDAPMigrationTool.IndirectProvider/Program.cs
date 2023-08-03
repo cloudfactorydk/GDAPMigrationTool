@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using PartnerLed;
 using PartnerLed.Logger;
 using PartnerLed.Model;
@@ -65,8 +67,37 @@ static async Task Migrate(IServiceProvider serviceProvider, ExportImport type)
     foreach (string roleId in rolesFromFile.Split(';'))
         roles.Add(new() { RoleDefinitionId = roleId });
 
-    List<DelegatedAdminRelationshipRequest>? allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(type);
-    foreach (var customer in allCustomers)
+    List<DelegatedAdminRelationshipRequest>? allCustomers = new();
+
+    string customerFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Customers", "customers.csv");
+
+    if (File.Exists(customerFilePath))
+    {
+        var lines = File.ReadLines(customerFilePath, Encoding.UTF8);
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line)) continue;
+
+            var props = line.Split(';');
+
+            if (props[0].ToLower().Trim() == "name") continue;
+
+            allCustomers.Add(new DelegatedAdminRelationshipRequest
+            {
+                Name = props[0],
+                PartnerTenantId = props[1],
+                CustomerTenantId = props[2],
+                OrganizationDisplayName = props[3].Replace("\"", string.Empty),
+                Duration = props[4]
+            });
+        }
+    }
+    else
+    {
+        allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(type);
+    }
+
+    foreach (var customer in allCustomers!)
         customer.Duration = "730";
 
     var customersWithGdap = (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(type)).ToList();
