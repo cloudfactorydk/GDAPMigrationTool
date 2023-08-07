@@ -45,11 +45,13 @@ namespace PartnerLed
             var appConfig = config.PublicClientApplicationOptions;
             GdapBaseEndPoint = config.GdapEndPoint;
             MicrosoftGraphBaseEndpoint = config.MicrosoftGraphBaseEndpoint;
-            PartnerCenterAPI= config.PartnerCenterAPI;
+            PartnerCenterAPI = config.PartnerCenterAPI;
             customProperties = config.customProperties;
             InteractiveApp = PublicClientApplicationBuilder
                         .CreateWithApplicationOptions(appConfig)
-                        .WithDefaultRedirectUri().WithExtraQueryParameters(new Dictionary<string, string>(){ { "acr_values", "urn:microsoft:policies:mfa" } }).Build();
+                        .WithDefaultRedirectUri()
+                        .WithExtraQueryParameters(new Dictionary<string, string>() { { "acr_values", "urn:microsoft:policies:mfa" } })
+                        .Build();
         }
     }
 }

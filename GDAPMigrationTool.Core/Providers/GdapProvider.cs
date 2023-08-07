@@ -173,7 +173,9 @@ namespace PartnerLed.Providers
                     throw new Exception("Unauthorized. Please make sure your Sign-in credentials are correct and MFA enabled.");
                 }
             }
-            return JsonConvert.DeserializeObject<JObject>(response.Content.ReadAsStringAsync().Result);
+
+            var readAsStringAsync = response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<JObject>(readAsStringAsync.Result);
         }
 
         /// <summary>
