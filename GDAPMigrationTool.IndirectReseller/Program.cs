@@ -67,7 +67,7 @@ static async Task Migrate(IServiceProvider serviceProvider, ExportImport type)
     foreach (string roleId in rolesFromFile.Split(';'))
         roles.Add(new() { RoleDefinitionId = roleId });
 
-    List<DelegatedAdminRelationshipRequest>? allCustomers = new();
+    List<DelegatedAdminRelationshipRequest> customersToProcess = new();
 
     string customerFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Customers", "customers.csv");
 
@@ -82,7 +82,7 @@ static async Task Migrate(IServiceProvider serviceProvider, ExportImport type)
 
             if (props[0].ToLower().Trim() == "name") continue;
 
-            allCustomers.Add(new DelegatedAdminRelationshipRequest
+            customersToProcess.Add(new DelegatedAdminRelationshipRequest
             {
                 Name = props[0],
                 PartnerTenantId = props[1],
@@ -94,22 +94,23 @@ static async Task Migrate(IServiceProvider serviceProvider, ExportImport type)
     }
     else
     {
-        allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(type);
+        var allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(type);
+        var customersWithGdap = (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(type)).ToList();
+        var customerIdsToIgnore = customersWithGdap
+            .Where(x =>
+                x.Status == DelegatedAdminRelationshipStatus.Active ||
+                x.Status == DelegatedAdminRelationshipStatus.Activating ||
+                x.Status == DelegatedAdminRelationshipStatus.ApprovalPending)
+            .Where(x => x.DisplayName.StartsWith("GDAP_"))
+            .Select(x => x.Customer.TenantId)
+            .ToHashSet();
+        customersToProcess = allCustomers.Where(x => !customerIdsToIgnore.Contains(x.CustomerTenantId)).ToList();
+        foreach (var request in customersToProcess)
+            request.Name = $"GDAP_2023_{request.CustomerTenantId}";
     }
 
-    foreach (var customer in allCustomers!)
+    foreach (var customer in customersToProcess)
         customer.Duration = "730";
-
-    var customersWithGdap = (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(type)).ToList();
-    var customerIdsToIgnore = customersWithGdap
-        .Where(x =>
-            x.Status == DelegatedAdminRelationshipStatus.Active ||
-            x.Status == DelegatedAdminRelationshipStatus.Activating ||
-            x.Status == DelegatedAdminRelationshipStatus.ApprovalPending)
-        .Where(x => x.DisplayName.StartsWith("GDAP_"))
-        .Select(x => x.Customer.TenantId)
-        .ToHashSet();
-    var customersToProcess = allCustomers.Where(x => !customerIdsToIgnore.Contains(x.CustomerTenantId)).ToList();
 
     var createGdapForCustomer = await serviceProvider.GetRequiredService<IGdapProvider>().CreateGDAPRequestAsync(type, customersToProcess, roles);
 

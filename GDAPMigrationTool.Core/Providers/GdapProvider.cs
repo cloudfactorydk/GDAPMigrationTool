@@ -350,7 +350,7 @@ namespace PartnerLed.Providers
         /// <param name="unifiedRoles"></param>
         /// <param name="delegatedAdminRelationshipRequests"></param>
         /// <returns></returns>
-        public async Task<(List<DelegatedAdminRelationship> successfulGDAP, List<DelegatedAdminRelationshipErrored> failedGDAP)> CreateGDAPRequestAsync(
+        public async Task<(List<DelegatedAdminRelationship>? successfulGDAP, List<DelegatedAdminRelationshipErrored>? failedGDAP)> CreateGDAPRequestAsync(
             ExportImport type,
             List<DelegatedAdminRelationshipRequest> inputCustomer,
             List<UnifiedRole> roleList)
@@ -375,7 +375,7 @@ namespace PartnerLed.Providers
                     {
                         Customer = new DelegatedAdminRelationshipCustomerParticipant() { TenantId = item.CustomerTenantId, DisplayName = item.OrganizationDisplayName },
                         Partner = new DelegatedAdminRelationshipParticipant() { TenantId = item.PartnerTenantId.ToString() },
-                        DisplayName = $"GDAP_2023_{item.CustomerTenantId}",
+                        DisplayName = item.Name,
                         Duration = $"P{item.Duration}D",
                         AccessDetails = new DelegatedAdminAccessDetails() { UnifiedRoles = roleList },
                     };
@@ -385,34 +385,25 @@ namespace PartnerLed.Providers
 
                 Console.WriteLine("Creating new relationship(s)...");
                 var url = $"{WebApiUrlAllGdaps}/migrate";
-                var allgdapRelationList = new ConcurrentBag<DelegatedAdminRelationshipErrored>();
+                var allGdapRelationList = new ConcurrentBag<DelegatedAdminRelationshipErrored>();
 
                 var options = new ParallelOptions()
                 {
-                    MaxDegreeOfParallelism = 5
+                    MaxDegreeOfParallelism = 5,
                 };
                 protectedApiCallHelper.setHeader(false);
-                await Parallel.ForEachAsync(gdapList, options, async (g, cancellationToken) =>
+                await Parallel.ForEachAsync(gdapList, options, async (g, _) =>
                 {
-                    int counter = 1;
-                    bool success = false;
-                    DelegatedAdminRelationshipErrored errored;
-                    do
-                    {
-                        errored = await PostGdapRelationship(url, g);
+                    var result = await PostGdapRelationship(url, g);
+                    if (result is null)
+                        return;
 
-                        if (errored.ErrorDetail != null && errored.ErrorDetail.Contains("The specified relationship name already exists with the current partner."))
-                            g.DisplayName = $"GDAP_{++counter}_{g.Customer.TenantId}";
-                        else
-                            success = true;
-                    } while (!success);
-
-                    allgdapRelationList.Add(errored);
+                    allGdapRelationList.Add(result);
                 });
 
                 // filtering the Relationship based on success
-                var successfulGDAP = allgdapRelationList.Where<DelegatedAdminRelationship>(item => item.Status == DelegatedAdminRelationshipStatus.Approved).ToList();
-                var failedGDAP = allgdapRelationList.Where(item => item.Status != DelegatedAdminRelationshipStatus.Approved || string.IsNullOrEmpty(item.Status.ToString())).ToList();
+                var successfulGDAP = allGdapRelationList.Where<DelegatedAdminRelationship>(item => item.Status == DelegatedAdminRelationshipStatus.Approved).ToList();
+                var failedGDAP = allGdapRelationList.Where(item => item.Status != DelegatedAdminRelationshipStatus.Approved || string.IsNullOrEmpty(item.Status.ToString())).ToList();
                 // Console.WriteLine("Downloading GDAP Relationship(s)...");
                 if (customProperties.ReplaceFileDuringUpdate && File.Exists($"{Constants.InputFolderPath}/gdapRelationship/gdapRelationship.{Helper.GetExtenstion(type)}"))
                 {

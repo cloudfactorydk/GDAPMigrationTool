@@ -6,7 +6,7 @@ namespace PartnerLed.Providers
     {
         Task<List<DelegatedAdminRelationship>?> GetAllGDAPAsync(ExportImport type);
 
-        Task<(List<DelegatedAdminRelationship> successfulGDAP, List<DelegatedAdminRelationshipErrored> failedGDAP)> CreateGDAPRequestAsync(
+        Task<(List<DelegatedAdminRelationship>? successfulGDAP, List<DelegatedAdminRelationshipErrored>? failedGDAP)> CreateGDAPRequestAsync(
             ExportImport type,
             List<DelegatedAdminRelationshipRequest> delegatedAdminRelationshipRequests,
             List<UnifiedRole> unifiedRoles);
