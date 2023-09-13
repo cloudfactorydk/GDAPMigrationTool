@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     public class DAPRemovalInfo
     {

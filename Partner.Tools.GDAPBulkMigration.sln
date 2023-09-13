@@ -21,6 +21,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GDAPMigrationTool.DirectBil
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GDAPMigrationTool.IndirectReseller", "GDAPMigrationTool.IndirectReseller\GDAPMigrationTool.IndirectReseller.csproj", "{69BF4B0D-E757-4CE2-B62A-94A6C9CC4CB3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GDAPMigrationTool.DirectBillPartner.SecurityGroups", "GDAPMigrationTool.DirectBillPartner.SecurityGroups\GDAPMigrationTool.DirectBillPartner.SecurityGroups.csproj", "{AF60EDA5-8FAD-410C-B9DE-AA83949315C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GDAPMigrationTool.IndirectProvider.SecurityGroups", "GDAPMigrationTool.IndirectProvider.SecurityGroups\GDAPMigrationTool.IndirectProvider.SecurityGroups.csproj", "{4F2DD7DD-24BF-4B08-8951-3F811151E07F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GDAPMigrationTool.IndirectReseller.SecurityGroups", "GDAPMigrationTool.IndirectReseller.SecurityGroups\GDAPMigrationTool.IndirectReseller.SecurityGroups.csproj", "{F5BFD132-28E2-4BA0-8821-33EAEB3486F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +49,18 @@ Global
 		{69BF4B0D-E757-4CE2-B62A-94A6C9CC4CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69BF4B0D-E757-4CE2-B62A-94A6C9CC4CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69BF4B0D-E757-4CE2-B62A-94A6C9CC4CB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF60EDA5-8FAD-410C-B9DE-AA83949315C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF60EDA5-8FAD-410C-B9DE-AA83949315C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF60EDA5-8FAD-410C-B9DE-AA83949315C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF60EDA5-8FAD-410C-B9DE-AA83949315C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F2DD7DD-24BF-4B08-8951-3F811151E07F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F2DD7DD-24BF-4B08-8951-3F811151E07F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F2DD7DD-24BF-4B08-8951-3F811151E07F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F2DD7DD-24BF-4B08-8951-3F811151E07F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5BFD132-28E2-4BA0-8821-33EAEB3486F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5BFD132-28E2-4BA0-8821-33EAEB3486F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5BFD132-28E2-4BA0-8821-33EAEB3486F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5BFD132-28E2-4BA0-8821-33EAEB3486F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using PartnerLed.Model;
-
-namespace GBM.Model
+﻿namespace GDAPMigrationTool.Core.Model
 {
     public class UpdateStatus
     {

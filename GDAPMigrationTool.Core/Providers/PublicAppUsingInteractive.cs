@@ -3,7 +3,7 @@
 
 using Microsoft.Identity.Client;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     /// <summary>
     /// Security token provider using username password.

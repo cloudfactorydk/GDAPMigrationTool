@@ -1,4 +1,4 @@
-﻿namespace GBM.Model
+﻿namespace GDAPMigrationTool.Core.Model
 {
     public class CustomProperties
     {

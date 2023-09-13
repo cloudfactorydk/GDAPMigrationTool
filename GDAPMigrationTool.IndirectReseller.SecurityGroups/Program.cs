@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-
 var appSetting = new AppSetting();
 
 using IHost host = Host.CreateDefaultBuilder(args)
@@ -25,5 +24,5 @@ using IHost host = Host.CreateDefaultBuilder(args)
     }).Build();
 
 
-await MainApp.RunAsync(host.Services, "roles_indirect_provider.csv");
+await MainApp.RunAsync(host.Services, "roles_indirect-reseller.csv", skipCreatingGdap: true);
 await host.RunAsync();

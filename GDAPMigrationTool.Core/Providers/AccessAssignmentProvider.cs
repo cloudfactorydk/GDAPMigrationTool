@@ -1,16 +1,13 @@
-﻿using GBM.Model;
-using GBM.Utility;
+﻿using System.Collections.Concurrent;
+using System.Net;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using PartnerLed.Model;
-using PartnerLed.Utility;
-using System.Collections.Concurrent;
-using System.Globalization;
-using System.Net;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class AccessAssignmentProvider : IAccessAssignmentProvider
     {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 
-namespace PartnerLed.Logger;
+namespace GDAPMigrationTool.Core.Logger;
 
 public static class CustomLoggerExtensions
 {

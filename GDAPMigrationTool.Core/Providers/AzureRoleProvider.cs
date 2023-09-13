@@ -1,11 +1,10 @@
-﻿using GBM.Model;
+﻿using System.Reflection;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PartnerLed.Model;
-using PartnerLed.Utility;
-using System.Reflection;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class AzureRoleProvider : IAzureRoleProvider
     {

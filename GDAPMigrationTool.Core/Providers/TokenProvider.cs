@@ -1,8 +1,8 @@
-﻿using Microsoft.Identity.Client;
-using PartnerLed.Model;
-using System.Net;
+﻿using System.Net;
+using GDAPMigrationTool.Core.Model;
+using Microsoft.Identity.Client;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class TokenProvider : ITokenProvider
     {

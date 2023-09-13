@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace PartnerLed.Logger
+namespace GDAPMigrationTool.Core.Logger
 {
     public class CustomLoggerConfiguration
     {

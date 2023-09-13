@@ -1,17 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using GBM.Model;
-using GBM.Utility;
+using System.Collections.Concurrent;
+using System.Net;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PartnerLed.Model;
-using PartnerLed.Utility;
-using System.Collections.Concurrent;
-using System.Net;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class GdapProvider : IGdapProvider
     {

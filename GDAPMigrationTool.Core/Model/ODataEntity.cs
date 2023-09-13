@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace GBM.Model
+namespace GDAPMigrationTool.Core.Model
 {
 
     public class ODataEntity

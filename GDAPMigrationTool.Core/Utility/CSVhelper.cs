@@ -1,11 +1,11 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using PartnerLed.Model;
-using PartnerLed.Providers;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
+using CsvHelper;
+using CsvHelper.Configuration;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Providers;
 
-namespace PartnerLed.Utility
+namespace GDAPMigrationTool.Core.Utility
 {
     /// <summary>
     /// The CsvProvider class.

@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using PartnerLed.Utility;
-using GBM.Model;
-using PartnerLed.Model;
+﻿using System.Collections.Concurrent;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using GBM.Utility;
-using System.Collections.Concurrent;
-using Attribute = PartnerLed.Model.Attribute;
+using Attribute = GDAPMigrationTool.Core.Model.Attribute;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class CustomerProvider : ICustomerProvider
     {

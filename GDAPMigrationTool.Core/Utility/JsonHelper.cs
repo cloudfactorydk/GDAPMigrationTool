@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using PartnerLed.Providers;
+﻿using GDAPMigrationTool.Core.Providers;
+using Newtonsoft.Json;
 
-namespace PartnerLed.Utility
+namespace GDAPMigrationTool.Core.Utility
 {
     /// <summary>
     /// JSON helper class

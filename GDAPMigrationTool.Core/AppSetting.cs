@@ -1,8 +1,8 @@
-﻿using GBM.Model;
+﻿using System.Net;
+using GDAPMigrationTool.Core.Model;
 using Microsoft.Identity.Client;
-using System.Net;
 
-namespace PartnerLed
+namespace GDAPMigrationTool.Core
 {
     public class AppSetting
     {

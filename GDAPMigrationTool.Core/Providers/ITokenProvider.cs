@@ -1,7 +1,7 @@
-﻿using Microsoft.Identity.Client;
-using PartnerLed.Model;
+﻿using GDAPMigrationTool.Core.Model;
+using Microsoft.Identity.Client;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public interface ITokenProvider
     {

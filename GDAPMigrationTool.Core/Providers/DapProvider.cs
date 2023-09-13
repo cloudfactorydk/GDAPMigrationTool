@@ -1,15 +1,13 @@
-﻿using GBM.Model;
-using GBM.Utility;
+﻿using System.Globalization;
+using System.Net;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PartnerLed.Model;
-using PartnerLed.Utility;
-using System.Globalization;
-using System.Net;
-using Microsoft.Identity.Client;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class DapProvider : IDapProvider
     {
