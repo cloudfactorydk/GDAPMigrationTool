@@ -74,8 +74,7 @@ public class MainApp
             var customerIdsToIgnore = customersWithGdap
                 .Where(x =>
                     x.Status == DelegatedAdminRelationshipStatus.Active ||
-                    x.Status == DelegatedAdminRelationshipStatus.Activating ||
-                    x.Status == DelegatedAdminRelationshipStatus.ApprovalPending)
+                    x.Status == DelegatedAdminRelationshipStatus.Activating)
                 .Where(x => x.DisplayName.StartsWith("GDAP_"))
                 .Select(x => x.Customer.TenantId)
                 .ToHashSet();
