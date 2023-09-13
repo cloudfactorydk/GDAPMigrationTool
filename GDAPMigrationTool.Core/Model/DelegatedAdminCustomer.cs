@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // </copyright>
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// Represents a delegated admin customer of a partner, and details about the partner's access to the customer's tenant.

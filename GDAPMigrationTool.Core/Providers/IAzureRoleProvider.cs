@@ -1,7 +1,6 @@
-﻿using GBM.Model;
-using PartnerLed.Model;
+﻿using GDAPMigrationTool.Core.Model;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public interface IAzureRoleProvider
     {

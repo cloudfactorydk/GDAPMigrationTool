@@ -1,4 +1,4 @@
-﻿namespace PartnerLed.Model
+﻿namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// This represents the partner's view of a Granular Admin relationship between a partner and a customer for Request.

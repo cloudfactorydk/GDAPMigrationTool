@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// Contains the various statuses of a Delegated Admin relationship.

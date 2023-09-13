@@ -1,4 +1,4 @@
-﻿namespace PartnerLed.Model
+﻿namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// Specifies the details of a role.

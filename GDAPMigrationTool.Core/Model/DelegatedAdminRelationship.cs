@@ -1,8 +1,7 @@
-﻿using GBM.Model;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// This represents the partner's view of a Delegated Admin relationship between a partner and a customer.

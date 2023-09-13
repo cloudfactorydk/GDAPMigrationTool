@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using PartnerLed.Utility;
-using System.Reflection;
-using System.Text;
+﻿using System.Text;
+using GDAPMigrationTool.Core.Utility;
+using Microsoft.Extensions.Logging;
 
-namespace PartnerLed.Logger
+namespace GDAPMigrationTool.Core.Logger
 {
     public sealed class CustomLogger : ILogger
     {

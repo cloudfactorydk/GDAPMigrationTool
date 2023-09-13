@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
 
-namespace PartnerLed.Logger
+namespace GDAPMigrationTool.Core.Logger
 {
     [ProviderAlias("customLogger")]
     public sealed class CustomLoggerProvider : ILoggerProvider

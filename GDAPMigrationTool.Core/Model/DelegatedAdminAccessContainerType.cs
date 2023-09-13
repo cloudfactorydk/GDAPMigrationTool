@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// The type of access container in a Delegated Admin relationship.

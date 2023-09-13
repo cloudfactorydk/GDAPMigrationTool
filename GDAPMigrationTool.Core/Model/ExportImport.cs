@@ -1,5 +1,5 @@
 ﻿
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     public enum ExportImport
     {

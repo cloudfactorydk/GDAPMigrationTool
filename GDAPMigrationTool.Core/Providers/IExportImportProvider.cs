@@ -1,4 +1,4 @@
-﻿namespace PartnerLed.Providers
+﻿namespace GDAPMigrationTool.Core.Providers
 {
     public interface IExportImportProvider
     {

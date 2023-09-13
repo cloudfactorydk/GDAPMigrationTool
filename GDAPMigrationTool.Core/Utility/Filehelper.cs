@@ -1,4 +1,4 @@
-﻿namespace GBM.Utility
+﻿namespace GDAPMigrationTool.Core.Utility
 {
     public class Filehelper
     {

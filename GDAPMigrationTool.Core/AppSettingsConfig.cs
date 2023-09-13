@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using CloudFactoryGdapMigrator.Utility;
-using GBM.Model;
+using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
-using System.Reflection;
 
-namespace PartnerLed
+namespace GDAPMigrationTool.Core
 {
     /// <summary>
     /// Description of the configuration of an AzureAD public client application (desktop/mobile application). This should

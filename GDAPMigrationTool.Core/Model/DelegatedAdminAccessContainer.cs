@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
     public class DelegatedAdminAccessContainer
     {

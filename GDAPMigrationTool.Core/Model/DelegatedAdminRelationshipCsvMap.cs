@@ -1,6 +1,6 @@
 ﻿using CsvHelper.Configuration;
 
-namespace PartnerLed.Model
+namespace GDAPMigrationTool.Core.Model
 {
 
     public class DelegatedAdminRelationshipMap : ClassMap<DelegatedAdminRelationship>

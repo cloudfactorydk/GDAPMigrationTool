@@ -1,7 +1,7 @@
-﻿using PartnerLed.Model;
-using PartnerLed.Utility;
+﻿using GDAPMigrationTool.Core.Model;
+using GDAPMigrationTool.Core.Utility;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     public class ExportImportProviderFactory : IExportImportProviderFactory
     {

@@ -1,6 +1,6 @@
-﻿using PartnerLed.Model;
+﻿using GDAPMigrationTool.Core.Model;
 
-namespace PartnerLed.Utility
+namespace GDAPMigrationTool.Core.Utility
 {
     public class Helper
     {

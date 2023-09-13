@@ -1,6 +1,4 @@
-﻿using CloudFactoryGdapMigrator.Utility;
-
-namespace PartnerLed.Utility
+﻿namespace GDAPMigrationTool.Core.Utility
 {
     internal class Constants
     {

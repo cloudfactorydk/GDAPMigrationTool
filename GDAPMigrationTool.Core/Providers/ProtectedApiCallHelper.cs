@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Net.Http.Headers;
 using System.Net.Http.Headers;
+using Microsoft.Net.Http.Headers;
 
-namespace PartnerLed.Providers
+namespace GDAPMigrationTool.Core.Providers
 {
     /// <summary>
     /// Helper class to call a protected API and process its result

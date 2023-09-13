@@ -1,4 +1,4 @@
-﻿namespace PartnerLed.Model
+﻿namespace GDAPMigrationTool.Core.Model
 {
     public class DAPRemovalResponse
     {

@@ -1,4 +1,4 @@
-﻿namespace PartnerLed.Model
+﻿namespace GDAPMigrationTool.Core.Model
 {
     /// <summary>
     /// Contains details of a participant in a Delegated Admin relationship.

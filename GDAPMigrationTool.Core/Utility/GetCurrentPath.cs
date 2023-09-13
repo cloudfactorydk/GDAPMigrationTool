@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using PartnerLed;
 
-namespace CloudFactoryGdapMigrator.Utility;
+namespace GDAPMigrationTool.Core.Utility;
 
 public static class GetCurrentPathHelper
 {
