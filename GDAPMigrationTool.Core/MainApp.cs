@@ -8,7 +8,7 @@ namespace GDAPMigrationTool.Core;
 
 public class MainApp
 {
-    public static async Task RunAsync(IServiceProvider serviceProvider, string rolesFile)
+    public static async Task RunAsync(IServiceProvider serviceProvider, string rolesFile, bool skipCreatingGdap = false)
     {
         Console.Clear();
         Console.WriteLine("Microsoft GDAP Migration Tool, by Cloud Factory\n");
@@ -25,7 +25,7 @@ public class MainApp
 
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        await Migrate(serviceProvider, rolesFile);
+        await Migrate(serviceProvider, rolesFile, skipCreatingGdap);
 
         stopwatch.Stop();
         Console.WriteLine($"[Completed the operation in {stopwatch.Elapsed}]\n");
@@ -34,7 +34,7 @@ public class MainApp
         Console.ReadKey();
     }
 
-    public static async Task Migrate(IServiceProvider serviceProvider, string rolesFile)
+    public static async Task Migrate(IServiceProvider serviceProvider, string rolesFile, bool skipCreatingGdap = false)
     {
         // https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#role-template-ids
         var rolesFromFile = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "Roles", rolesFile));
@@ -46,6 +46,7 @@ public class MainApp
 
         string customerFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Customers", "customers.csv");
 
+        List<DelegatedAdminRelationship> customersWithGdap = null;
         if (File.Exists(customerFilePath))
         {
             var lines = File.ReadLines(customerFilePath, Encoding.UTF8);
@@ -70,7 +71,7 @@ public class MainApp
         else
         {
             var allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(ExportImport.Json);
-            var customersWithGdap = (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(ExportImport.Json)).ToList();
+            customersWithGdap = (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(ExportImport.Json)).ToList();
             var customerIdsToIgnore = customersWithGdap
                 .Where(x =>
                     x.Status == DelegatedAdminRelationshipStatus.Active ||
@@ -86,7 +87,19 @@ public class MainApp
         foreach (var customer in customersToProcess)
             customer.Duration = "730";
 
-        var createGdapForCustomer = await serviceProvider.GetRequiredService<IGdapProvider>().CreateGDAPRequestAsync(ExportImport.Json, customersToProcess, roles);
+        (List<DelegatedAdminRelationship>? successfulGDAP, List<DelegatedAdminRelationshipErrored>? failedGDAP) createGdapForCustomer;
+        if (!skipCreatingGdap)
+        {
+            createGdapForCustomer = await serviceProvider.GetRequiredService<IGdapProvider>().CreateGDAPRequestAsync(ExportImport.Json, customersToProcess, roles);
+        }
+        else
+        {
+            customersWithGdap ??= (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(ExportImport.Json))
+                .Where(x => x.Status == DelegatedAdminRelationshipStatus.Active ||
+                            x.Status == DelegatedAdminRelationshipStatus.Activating)
+                .ToList();
+            createGdapForCustomer = (customersWithGdap, new List<DelegatedAdminRelationshipErrored>());
+        }
 
         var allSecurityGroups = await serviceProvider.GetRequiredService<IAccessAssignmentProvider>().ExportSecurityGroup(ExportImport.Json);
         var adminAgents = allSecurityGroups.Single(x => x.DisplayName == "AdminAgents");
