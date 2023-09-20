@@ -8,7 +8,7 @@ namespace GDAPMigrationTool.Core;
 
 public class MainApp
 {
-    public static async Task RunAsync(IServiceProvider serviceProvider, string rolesFile, bool skipCreatingGdap = false)
+    public static async Task RunAsync(IServiceProvider serviceProvider, string rolesFile, bool skipCreatingGdap = false, bool forceNewGdaps = false)
     {
         Console.Clear();
         Console.WriteLine("Microsoft GDAP Migration Tool, by Cloud Factory\n");
@@ -25,7 +25,7 @@ public class MainApp
 
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        await Migrate(serviceProvider, rolesFile, skipCreatingGdap);
+        await Migrate(serviceProvider, rolesFile, skipCreatingGdap, forceNewGdaps);
 
         stopwatch.Stop();
         Console.WriteLine($"[Completed the operation in {stopwatch.Elapsed}]\n");
@@ -34,7 +34,7 @@ public class MainApp
         Console.ReadKey();
     }
 
-    public static async Task Migrate(IServiceProvider serviceProvider, string rolesFile, bool skipCreatingGdap = false)
+    public static async Task Migrate(IServiceProvider serviceProvider, string rolesFile, bool skipCreatingGdap = false, bool forceNewGdaps = false)
     {
         // https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference#role-template-ids
         var rolesFromFile = await File.ReadAllTextAsync(Path.Combine(Directory.GetCurrentDirectory(), "Roles", rolesFile));
@@ -52,11 +52,13 @@ public class MainApp
             var lines = File.ReadLines(customerFilePath, Encoding.UTF8);
             foreach (var line in lines)
             {
-                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
 
                 var props = line.Split(';');
 
-                if (props[0].ToLower().Trim() == "name") continue;
+                if (props[0].ToLower().Trim() == "name")
+                    continue;
 
                 customersToProcess.Add(new DelegatedAdminRelationshipRequest
                 {
@@ -70,15 +72,38 @@ public class MainApp
         }
         else
         {
+            if (forceNewGdaps)
+            {
+                Console.WriteLine("[WARNING]: You're creating new GDAPs on every single customer/tenant you have. Are you sure you want to proceed?");
+                Console.WriteLine("[yes/no]: ");
+                var answer = Console.ReadLine();
+                if ((answer ?? "").Trim().ToLowerInvariant() != "yes")
+                {
+                    Console.WriteLine("Non-'yes' answer received. Stopped. It's safe to close this app now.");
+                    return;
+                }
+            }
+
             var allCustomers = await serviceProvider.GetRequiredService<IDapProvider>().ExportCustomerDetails(ExportImport.Json);
             customersWithGdap = (await serviceProvider.GetRequiredService<IGdapProvider>().GetAllGDAPAsync(ExportImport.Json)).ToList();
-            var customerIdsToIgnore = customersWithGdap
-                .Where(x =>
-                    x.Status == DelegatedAdminRelationshipStatus.Active ||
-                    x.Status == DelegatedAdminRelationshipStatus.Activating)
-                .Where(x => x.DisplayName.StartsWith("GDAP_"))
-                .Select(x => x.Customer.TenantId)
-                .ToHashSet();
+            HashSet<string> customerIdsToIgnore;
+            if (forceNewGdaps)
+            {
+                customerIdsToIgnore = new HashSet<string>();
+                foreach (var request in customersToProcess)
+                    request.Name = $"GDAP_{Guid.NewGuid().ToString().Substring(0, 4)}_{request.CustomerTenantId}";
+            }
+            else
+            {
+                customerIdsToIgnore = customersWithGdap
+                    .Where(x =>
+                        x.Status == DelegatedAdminRelationshipStatus.Active ||
+                        x.Status == DelegatedAdminRelationshipStatus.Activating)
+                    .Where(x => x.DisplayName.StartsWith("GDAP_"))
+                    .Select(x => x.Customer.TenantId)
+                    .ToHashSet();
+            }
+
             customersToProcess = allCustomers.Where(x => !customerIdsToIgnore.Contains(x.CustomerTenantId)).ToList();
             foreach (var request in customersToProcess)
                 request.Name = $"GDAP_2023_{request.CustomerTenantId}";
