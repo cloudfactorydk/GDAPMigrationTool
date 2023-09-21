@@ -96,7 +96,8 @@ namespace GDAPMigrationTool.Core.Providers
                     JsonConvert.SerializeObject(delegatedAdminRelationship, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToString());
 
                 string userResponse = GetUserResponse(response.StatusCode);
-                Console.WriteLine($"{delegatedAdminRelationship.Customer.DisplayName} - {userResponse} - {response.Content}");
+                string actualErrorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"{delegatedAdminRelationship.Customer.DisplayName} - {userResponse} - {actualErrorMessage}");
 
                 logger
                   .LogInformation($"GDAP Response:\n{delegatedAdminRelationship.DisplayName} {delegatedAdminRelationship.Customer.TenantId}\n {response.Content.ReadAsStringAsync().Result} \n");
